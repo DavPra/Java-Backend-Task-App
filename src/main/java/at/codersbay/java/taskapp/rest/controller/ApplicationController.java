@@ -1,14 +1,13 @@
 package at.codersbay.java.taskapp.rest.controller;
 
-import at.codersbay.java.taskapp.rest.entities.Task;
 import at.codersbay.java.taskapp.rest.entities.User;
-import at.codersbay.java.taskapp.rest.entities.Profile;
 import at.codersbay.java.taskapp.rest.exceptions.*;
-import at.codersbay.java.taskapp.rest.services.BusinessServices;
+import at.codersbay.java.taskapp.rest.services.UserServices;
+import at.codersbay.java.taskapp.rest.services.ProfileServices;
+import at.codersbay.java.taskapp.rest.services.TaskServices;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -17,7 +16,13 @@ import java.util.*;
 public class ApplicationController {
 
     @Autowired
-    private BusinessServices businessServices;
+    private UserServices UserServices;
+
+    @Autowired
+    private ProfileServices ProfileServices;
+
+    @Autowired
+    private TaskServices TaskServices;
 
     @GetMapping("/hi")
     String welcome() {
@@ -32,17 +37,17 @@ public class ApplicationController {
     @CrossOrigin
     @GetMapping("/users")
     List<User> getAllUsers() {
-        return businessServices.getAllUsers();
+        return UserServices.getAllUsers();
     }
 
     @GetMapping("/users/{id}")
     User getUser(@PathVariable Long id) throws UserNotFoundException {
-        return businessServices.getUserByID(id);
+        return UserServices.getUserByID(id);
     }
 
     @GetMapping("/users/byEmail/{email}")
     User getUserByEmail(@PathVariable String email) throws UserNotFoundException {
-        return businessServices.getUserByEmail(email);
+        return UserServices.getUserByEmail(email);
     }
 
     @PostMapping("/users")
@@ -51,7 +56,7 @@ public class ApplicationController {
         HttpStatus status = null;
         String message = "";
         try {
-            user = businessServices.createUser(user);
+            user = UserServices.createUser(user);
             status = HttpStatus.OK;
             message = "User created";
         } catch (UserAlreadyExistsException UAEE) {
