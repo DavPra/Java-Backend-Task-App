@@ -20,6 +20,10 @@ public class User {
     @Column(name = "Email", nullable = false)
     private String email;
 
+    public Long getId() {
+        return id;
+    }
+
     public String getVorname() {
         return vorname;
     }
@@ -46,4 +50,6 @@ public class User {
 }
 
 /* This entity is used to store the user data in the database.
-* Each User has an ID, Vor and Nachname and an email adress. */
+* Each User has an ID, Vor and Nachname and an email adress.
+* Getter and Setter allow further usage of the data.
+* */

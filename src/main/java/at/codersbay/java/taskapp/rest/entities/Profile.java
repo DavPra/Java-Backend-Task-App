@@ -1,6 +1,5 @@
 package at.codersbay.java.taskapp.rest.entities;
 
-import jdk.jshell.Snippet;
 
 import javax.persistence.*;
 
@@ -21,6 +20,25 @@ public class Profile {
     @Column(name = "Image", nullable = false)
     private String image;
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 }
 
 /* This entity is used to store the profile data in the database.
