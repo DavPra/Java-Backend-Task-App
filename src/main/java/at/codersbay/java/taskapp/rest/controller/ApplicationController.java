@@ -35,6 +35,16 @@ public class ApplicationController {
         return businessServices.getAllUsers();
     }
 
+    @GetMapping("/users/{id}")
+    User getUser(@PathVariable Long id) throws UserNotFoundException {
+        return businessServices.getUserByID(id);
+    }
+
+    @GetMapping("/users/byEmail/{email}")
+    User getUserByEmail(@PathVariable String email) throws UserNotFoundException {
+        return businessServices.getUserByEmail(email);
+    }
+
     @PostMapping("/users")
     User createUser(@RequestBody User user) throws UserAlreadyExistsException {
 

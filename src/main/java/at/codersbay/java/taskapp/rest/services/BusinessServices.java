@@ -50,11 +50,22 @@ public class BusinessServices {
         return userDAO.findAll();
     }
 
-    public User getUser(Long id) throws UserNotFoundException {
+    public User getUserByID (Long id) throws UserNotFoundException {
         if (id == null) {
             throw new UserNotFoundException("Id is null");
         }
         Optional<User> user = userDAO.findById(id);
+        if (!user.isPresent()) {
+            throw new UserNotFoundException("User not found");
+        }
+        return user.get();
+    }
+
+    public User getUserByEmail (String email) throws UserNotFoundException {
+        if (email == null) {
+            throw new UserNotFoundException("Email is null");
+        }
+        Optional<User> user = Optional.ofNullable(userDAO.findByEmail(email));
         if (!user.isPresent()) {
             throw new UserNotFoundException("User not found");
         }

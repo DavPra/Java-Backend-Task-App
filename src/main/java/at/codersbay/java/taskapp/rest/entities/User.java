@@ -61,6 +61,8 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+
 }
 
 /* This entity is used to store the user data in the database.
