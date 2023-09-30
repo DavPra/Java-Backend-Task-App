@@ -11,6 +11,16 @@ public class User {
     @Column(name = "id")
     private Long id;
 
+    public User() {
+    }
+
+    public User(Long id, String vorname, String nachname, String email) {
+        this.id = id;
+        this.vorname = vorname;
+        this.nachname = nachname;
+        this.email = email;
+    }
+
     @Column(name = "Vorname", nullable = false)
     private String vorname;
 
@@ -22,6 +32,10 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getVorname() {
