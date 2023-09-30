@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface UserDAO extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.email = :email")
-    public User findByEmail(String email);
+    User findByEmail(String email);
 }
