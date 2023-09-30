@@ -32,7 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 /local/
-/derby.log
+derby.log
 /mvnw
 /mvnw.cmd
 /.mvn/
