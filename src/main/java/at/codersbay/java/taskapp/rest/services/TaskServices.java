@@ -81,4 +81,8 @@ public class TaskServices {
         }
         return task;
     }
+
+    public List<Task> getAllTasks() {
+        return taskDAO.findAll();
+    }
 }
