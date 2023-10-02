@@ -1,10 +1,8 @@
 package at.codersbay.java.taskapp.rest.controller;
 
-import at.codersbay.java.taskapp.rest.entities.User;
+import at.codersbay.java.taskapp.rest.entities.*;
 import at.codersbay.java.taskapp.rest.exceptions.*;
-import at.codersbay.java.taskapp.rest.services.UserServices;
-import at.codersbay.java.taskapp.rest.services.ProfileServices;
-import at.codersbay.java.taskapp.rest.services.TaskServices;
+import at.codersbay.java.taskapp.rest.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,6 +62,66 @@ public class ApplicationController {
             message = UAEE.getMessage();
         }
         return user;
+    }
+
+    @PutMapping("/users/{id}")
+    User updateUser(@PathVariable Long id, @RequestBody User user) throws UserNotFoundException {
+        return UserServices.updateUserByUserID(id, user);
+    }
+
+    @DeleteMapping("/users/{id}")
+    User deleteUser(@PathVariable Long id) throws UserNotFoundException {
+        return UserServices.deleteUser(id);
+    }
+
+    @GetMapping("/tasks")
+    List<Task> getAllTasks() {
+        return TaskServices.getAllTasks();
+    }
+
+    @GetMapping("/tasks/{id}")
+    Task getTask(@PathVariable Long id) throws TaskNotFoundException {
+        return TaskServices.getTaskByTaskID(id);
+    }
+
+    @PostMapping("/tasks")
+    Task createTask(@RequestBody Task task) throws TaskNotFoundException {
+        return TaskServices.createTask(task);
+    }
+
+    @PutMapping("/tasks/{id}")
+    Task updateTask(@PathVariable Long id, @RequestBody Task task) throws TaskNotFoundException {
+        return TaskServices.updateTaskByTaskID(id, task);
+    }
+
+    @DeleteMapping("/tasks/{id}")
+    Task deleteTask(@PathVariable Long id) throws TaskNotFoundException {
+        return TaskServices.deleteTaskByTaskID(id);
+    }
+
+    @GetMapping("/profiles")
+    List<Profile> getAllProfiles() {
+        return ProfileServices.getAllProfiles();
+    }
+
+    @GetMapping("/profiles/{id}")
+    Profile getProfile(@PathVariable Long id) throws ProfileNotFoundException {
+        return ProfileServices.getProfileByUserID(id);
+    }
+
+    @PostMapping("/profiles")
+    Profile createProfile(@RequestBody Profile profile) throws ProfileNotFoundException {
+        return ProfileServices.createProfile(profile);
+    }
+
+    @PutMapping("/profiles/{id}")
+    Profile updateProfile(@PathVariable Long id, @RequestBody Profile profile) throws ProfileNotFoundException {
+        return ProfileServices.updateProfileByUserID(id, profile);
+    }
+
+    @DeleteMapping("/profiles/{id}")
+    Profile deleteProfile(@PathVariable Long id) throws ProfileNotFoundException {
+        return ProfileServices.deleteProfileByID(id);
     }
 
 
