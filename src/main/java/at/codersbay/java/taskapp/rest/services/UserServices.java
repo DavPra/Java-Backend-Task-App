@@ -76,4 +76,26 @@ public class UserServices {
         }
         return user.get();
     }
+
+    public User updateUserByUserID(Long id, User user) throws UserNotFoundException {
+        if (id == null) {
+            throw new UserNotFoundException("Id is null");
+        }
+        Optional<User> userToUpdate = userDAO.findById(id);
+        if (!userToUpdate.isPresent()) {
+            throw new UserNotFoundException("User not found");
+        }
+        if (user == null) {
+            throw new UserNotFoundException("User is null");
+        }
+        if (user.getId() != null) {
+            throw new UserNotFoundException("User already exists");
+        }
+        try {
+            userDAO.save(user);
+        } catch (Exception e) {
+            throw new UserNotFoundException("User could not be updated");
+        }
+        return user;
+    }
 }
