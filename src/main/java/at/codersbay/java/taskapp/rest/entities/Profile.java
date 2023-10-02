@@ -14,33 +14,22 @@ public class Profile {
 
     private Long id;
 
-    @Column(name = "UserID", nullable = false)
-    private Long userid;
-
     @Column(name = "Bio", nullable = false)
     private String bio;
 
     @Column(name = "Image", nullable = false)
     private String image;
 
+    @OneToOne(mappedBy = "profile")
+    private User user;
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setUserid(Long userid) {
-        this.userid = userid;
-    }
 
     public Long getId() {
         return id;
-    }
-
-    public Long getUser() {
-        return userid;
-    }
-
-    public void setUser(Long user) {
-        this.userid = user;
     }
 
     public String getBio() {
@@ -57,6 +46,15 @@ public class Profile {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
 

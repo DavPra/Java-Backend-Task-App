@@ -1,6 +1,7 @@
 package at.codersbay.java.taskapp.rest.entities;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "tasks")
@@ -38,6 +39,9 @@ public class Task {
 
     @Column(name = "UserID", nullable = false)
     private Long userID;
+
+    @ManyToMany(mappedBy = "tasks")
+    Set<User> users;
 
     public Long getId() {
         return id;
