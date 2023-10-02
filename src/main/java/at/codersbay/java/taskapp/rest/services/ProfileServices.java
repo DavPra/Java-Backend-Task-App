@@ -132,5 +132,25 @@ public class ProfileServices {
         return profile.get();
     }
 
+    public Profile linkProfileIDtoUserID (Long id, Profile profile) throws ProfileNotFoundException {
+        if (id == null) {
+            throw new ProfileNotFoundException("Id is null");
+        }
+        if (profile == null) {
+            throw new ProfileNotFoundException("Profile is null");
+        }
+        Optional<Profile> profileOptional = profileDAO.findById(id);
+        if (!profileOptional.isPresent()) {
+            throw new ProfileNotFoundException("Profile not found");
+        }
+        profile.setId(id);
+        try {
+            profileDAO.save(profile);
+        } catch (Exception e) {
+            throw new ProfileNotFoundException("Profile could not be updated");
+        }
+        return profile;
+    }
+
 
 }
