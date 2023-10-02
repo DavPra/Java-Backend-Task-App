@@ -2,13 +2,9 @@ package at.codersbay.java.taskapp.rest.services;
 
 import at.codersbay.java.taskapp.rest.DAO.*;
 import at.codersbay.java.taskapp.rest.entities.*;
-import at.codersbay.java.taskapp.rest.exceptions.*;
 
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.hibernate.PropertyValueException;
 
-import java.util.*;
 import javax.annotation.PostConstruct;
 
 public class SetUpService {
@@ -29,15 +25,15 @@ public class SetUpService {
     public void setUp() {
 
         User admin = new User();
-        admin.setVorname("David");
-        admin.setNachname("Praschak");
+        admin.setFirstName("David");
+        admin.setLastName("Praschak");
         admin.setEmail("david.praschak@test.org");
 
         admin = this.userDAO.save(admin);
 
         User user = new User();
-        user.setVorname("Max");
-        user.setNachname("Mustermann");
+        user.setFirstName("Max");
+        user.setLastName("Mustermann");
         user.setEmail("max@mustermann.org");
 
         user = this.userDAO.save(user);
