@@ -16,13 +16,12 @@ public class Task {
     public Task() {
     }
 
-    public Task(Long id, String titel, String beschreibung, String dueDate, boolean done, Long userID) {
+    public Task(Long id, String titel, String beschreibung, String dueDate, boolean done) {
         this.id = id;
         this.titel = titel;
         this.beschreibung = beschreibung;
         this.dueDate = dueDate;
         this.done = done;
-        this.userID = userID;
     }
 
     @Column(name = "Titel", nullable = false)
@@ -36,9 +35,6 @@ public class Task {
 
     @Column(name = "Erledigt", nullable = false)
     private boolean done;
-
-    @Column(name = "UserID", nullable = false)
-    private Long userID;
 
     @ManyToMany(mappedBy = "tasks")
     Set<User> users;
@@ -81,14 +77,6 @@ public class Task {
 
     public void setDone(boolean done) {
         this.done = done;
-    }
-
-    public Long getUserID() {
-        return userID;
-    }
-
-    public void setUserID(Long userID) {
-        this.userID = userID;
     }
 
 }
