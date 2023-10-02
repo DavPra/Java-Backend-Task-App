@@ -79,6 +79,17 @@ public class Task {
         this.done = done;
     }
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", titel='" + titel + '\'' +
+                ", beschreibung='" + beschreibung + '\'' +
+                ", dueDate='" + dueDate + '\'' +
+                ", done=" + done +
+                '}';
+    }
+
 }
 
 /* This entity is used to store the task data in the database.
