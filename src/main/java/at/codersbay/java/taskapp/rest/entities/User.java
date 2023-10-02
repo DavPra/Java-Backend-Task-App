@@ -15,18 +15,18 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String vorname, String nachname, String email) {
+    public User(Long id, String firstName, String lastName, String email) {
         this.id = id;
-        this.vorname = vorname;
-        this.nachname = nachname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
     }
 
     @Column(name = "Vorname", nullable = false)
-    private String vorname;
+    private String firstName;
 
     @Column(name = "Nachname", nullable = false)
-    private String nachname;
+    private String lastName;
 
     @Column(name = "Email", nullable = false)
     private String email;
@@ -50,20 +50,20 @@ public class User {
         this.id = id;
     }
 
-    public String getVorname() {
-        return vorname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setVorname(String vorname) {
-        this.vorname = vorname;
+    public void setFirstName(String vorname) {
+        this.firstName = vorname;
     }
 
-    public String getNachname() {
-        return nachname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setNachname(String nachname) {
-        this.nachname = nachname;
+    public void setLastName(String nachname) {
+        this.lastName = nachname;
     }
 
     public String getEmail() {
@@ -80,6 +80,17 @@ public class User {
 
     public void setProfile(Profile profile) {
         this.profile = profile;
+    }
+
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", Vorname='" + firstName + '\'' +
+                ", Nachname='" + lastName + '\'' +
+                ", Email='" + email + '\'' +
+                '}';
     }
 
 
