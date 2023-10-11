@@ -1,8 +1,8 @@
 package at.codersbay.java.taskapp.rest.services;
 
-import at.codersbay.java.taskapp.rest.DAO.*;
-import at.codersbay.java.taskapp.rest.entities.*;
-import at.codersbay.java.taskapp.rest.exceptions.*;
+import at.codersbay.java.taskapp.rest.DAO.TaskDAO;
+import at.codersbay.java.taskapp.rest.entities.Task;
+import at.codersbay.java.taskapp.rest.exceptions.TaskNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,74 +12,49 @@ import java.util.*;
 @Service
 public class TaskServices {
 
-    public TaskServices() {
-    }
+    private final TaskDAO taskDAO;
 
     @Autowired
-    TaskDAO taskDAO;
+    public TaskServices(TaskDAO taskDAO) {
+        this.taskDAO = taskDAO;
+    }
 
-    public Task createTask (Task task) throws TaskNotFoundException {
+    public Task createTask(Task task) {
         if (task == null) {
-            throw new TaskNotFoundException("Task is null");
+            throw new IllegalArgumentException("Task is null");
         }
         if (task.getId() != null) {
-            throw new TaskNotFoundException("Task already exists");
+            throw new IllegalArgumentException("Task already exists");
         }
-        try {
-            taskDAO.save(task);
-        } catch (Exception e) {
-            throw new TaskNotFoundException("Task could not be created");
-        }
-        return task;
+        return taskDAO.save(task);
     }
 
     public Task getTaskByTaskID(Long id) throws TaskNotFoundException {
         if (id == null) {
             throw new TaskNotFoundException("Id is null");
         }
-        Optional<Task> task = taskDAO.findById(id);
-        if (!task.isPresent()) {
-            throw new TaskNotFoundException("Task not found");
-        }
-        return task.get();
+        return taskDAO.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
     }
 
     public Task deleteTaskByTaskID(Long id) throws TaskNotFoundException {
-        if (id == null) {
-            throw new TaskNotFoundException("Id is null");
-        }
-        Optional<Task> task = taskDAO.findById(id);
-        if (!task.isPresent()) {
-            throw new TaskNotFoundException("Task not found");
-        }
-        try {
-            taskDAO.delete(task.get());
-        } catch (Exception e) {
-            throw new TaskNotFoundException("Task could not be deleted");
-        }
-        return task.get();
+        Task task = getTaskByTaskID(id);
+        taskDAO.delete(task);
+        return task;
     }
 
     public Task updateTaskByTaskID(Long id, Task task) throws TaskNotFoundException {
-        if (id == null) {
-            throw new TaskNotFoundException("Id is null");
-        }
-        Optional<Task> taskToUpdate = taskDAO.findById(id);
-        if (!taskToUpdate.isPresent()) {
-            throw new TaskNotFoundException("Task not found");
-        }
         if (task == null) {
-            throw new TaskNotFoundException("Task is null");
+            throw new IllegalArgumentException("Task is null");
         }
-        if (task.getId() != null) {
-            throw new TaskNotFoundException("Task already exists");
-        }
-        try {
-            taskDAO.save(task);
-        } catch (Exception e) {
-            throw new TaskNotFoundException("Task could not be updated");
-        }
-        return task;
+        Task existingTask = getTaskByTaskID(id);
+
+        existingTask.setTitel(task.getTitel());
+        existingTask.setBeschreibung(task.getBeschreibung());
+        existingTask.setDueDate(task.getDueDate());
+        existingTask.setDone(task.getDone());
+
+
+        return taskDAO.save(existingTask);
     }
 
     public List<Task> getAllTasks() {
