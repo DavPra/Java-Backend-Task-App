@@ -112,7 +112,8 @@ public class ApplicationController {
 
     @PostMapping("/profiles")
     Profile createProfile(@RequestBody Profile profile) throws ProfileNotFoundException {
-        return ProfileServices.createProfile(profile);
+        ProfileServices.createProfile(profile);
+        return ProfileServices.linkProfileIDtoUserID(profile.getUser().getId(), profile);
     }
 
     @PutMapping("/profiles/{id}")
