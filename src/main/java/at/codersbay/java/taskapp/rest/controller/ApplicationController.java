@@ -70,7 +70,8 @@ public class ApplicationController {
     }
 
     @DeleteMapping("/users/{id}")
-    User deleteUser(@PathVariable Long id) throws UserNotFoundException {
+    User deleteUser(@PathVariable Long id) throws UserNotFoundException, ProfileNotFoundException {
+        ProfileServices.deleteProfileByUserID(id);
         return UserServices.deleteUser(id);
     }
 
