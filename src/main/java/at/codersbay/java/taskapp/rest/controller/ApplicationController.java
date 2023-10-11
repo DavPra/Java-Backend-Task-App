@@ -69,7 +69,7 @@ public class ApplicationController {
         return UserServices.updateUserByUserID(id, user);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/users/{id}")  //error when deleting because no profile is found i think
     User deleteUser(@PathVariable Long id) throws UserNotFoundException, ProfileNotFoundException {
         ProfileServices.deleteProfileByUserID(id);
         return UserServices.deleteUser(id);
@@ -100,6 +100,7 @@ public class ApplicationController {
         return TaskServices.deleteTaskByTaskID(id);
     }
 
+    //Profiles need to be fixed to work with the new User class
     @GetMapping("/profiles")
     List<Profile> getAllProfiles() {
         return ProfileServices.getAllProfiles();
@@ -110,7 +111,7 @@ public class ApplicationController {
         return ProfileServices.getProfileByUserID(id);
     }
 
-    @PostMapping("/profiles")
+    @PostMapping("/profiles/{id}")
     Profile createProfile(@RequestBody Profile profile) throws ProfileNotFoundException {
         ProfileServices.createProfile(profile);
         return ProfileServices.linkProfileIDtoUserID(profile.getUser().getId(), profile);
