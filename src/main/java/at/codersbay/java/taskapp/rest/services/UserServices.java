@@ -1,101 +1,73 @@
 package at.codersbay.java.taskapp.rest.services;
 
-import at.codersbay.java.taskapp.rest.DAO.*;
-import at.codersbay.java.taskapp.rest.entities.*;
-import at.codersbay.java.taskapp.rest.exceptions.*;
-
-import org.springframework.stereotype.Service;
+import at.codersbay.java.taskapp.rest.DAO.UserDAO;
+import at.codersbay.java.taskapp.rest.entities.User;
+import at.codersbay.java.taskapp.rest.exceptions.UserAlreadyExistsException;
+import at.codersbay.java.taskapp.rest.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
-import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServices {
 
-    public UserServices() {
-    }
+    private final UserDAO userDAO;
 
     @Autowired
-    UserDAO userDAO;
+    public UserServices(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
-    public User createUser (User user) throws UserAlreadyExistsException {
+    public User createUser(User user) throws UserAlreadyExistsException {
         if (user == null) {
-            throw new UserAlreadyExistsException("User is null");
+            throw new IllegalArgumentException("User is null");
         }
         if (user.getId() != null) {
             throw new UserAlreadyExistsException("User already exists");
         }
-        try {
-            userDAO.save(user);
-        } catch (Exception e) {
-            throw new UserAlreadyExistsException("User could not be created");
-        }
-        return user;
+        return userDAO.save(user);
     }
 
     public List<User> getAllUsers() {
-
         return userDAO.findAll();
     }
 
-    public User getUserByID (Long id) throws UserNotFoundException {
+    public User getUserByID(Long id) throws UserNotFoundException {
         if (id == null) {
             throw new UserNotFoundException("Id is null");
         }
-        Optional<User> user = userDAO.findById(id);
-        if (!user.isPresent()) {
-            throw new UserNotFoundException("User not found");
-        }
-        return user.get();
+        return userDAO.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-    public User getUserByEmail (String email) throws UserNotFoundException {
-        if (email == null) {
-            throw new UserNotFoundException("Email is null");
+    public User getUserByEmail(String email) throws UserNotFoundException {
+        if (email == null || email.isEmpty()) {
+            throw new UserNotFoundException("Email is null or empty");
         }
-        Optional<User> user = Optional.ofNullable(userDAO.findByEmail(email));
-        if (!user.isPresent()) {
-            throw new UserNotFoundException("User not found");
-        }
-        return user.get();
+        return Optional.ofNullable(userDAO.findByEmail(email))
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public User deleteUser(Long id) throws UserNotFoundException {
-        if (id == null) {
-            throw new UserNotFoundException("Id is null");
-        }
-        Optional<User> user = userDAO.findById(id);
-        if (!user.isPresent()) {
-            throw new UserNotFoundException("User not found");
-        }
+        User user = getUserByID(id);
         try {
-            userDAO.delete(user.get());
+            userDAO.delete(user);
         } catch (Exception e) {
             throw new UserNotFoundException("User could not be deleted");
         }
-        return user.get();
+        return user;
     }
 
     public User updateUserByUserID(Long id, User user) throws UserNotFoundException {
-        if (id == null) {
-            throw new UserNotFoundException("Id is null");
-        }
-        Optional<User> userToUpdate = userDAO.findById(id);
-        if (!userToUpdate.isPresent()) {
-            throw new UserNotFoundException("User not found");
-        }
         if (user == null) {
-            throw new UserNotFoundException("User is null");
+            throw new IllegalArgumentException("User is null");
         }
-        if (user.getId() != null) {
-            throw new UserNotFoundException("User already exists");
-        }
-        try {
-            userDAO.save(user);
-        } catch (Exception e) {
-            throw new UserNotFoundException("User could not be updated");
-        }
-        return user;
+        User existingUser = getUserByID(id);
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setProfile(user.getProfile());
+        return userDAO.save(existingUser);
     }
 }
