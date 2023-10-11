@@ -3,6 +3,11 @@ package at.codersbay.java.taskapp.rest.entities;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * This entity is used to store the user data in the database.
+ * Each User has an ID, a first and last name, and an email address.
+ * Getter and Setter methods allow further usage of the data.
+ */
 @Entity
 @Table(name = "users")
 public class User {
@@ -12,35 +17,33 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    public User() {
-    }
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
-    public User(Long id, String firstName, String lastName, String email) {
-        this.id = id;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_tasks",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id"))
+    private Set<Task> tasks;
+
+    public User() {}
+
+    public User(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
     }
-
-    @Column(name = "Vorname", nullable = false)
-    private String firstName;
-
-    @Column(name = "Nachname", nullable = false)
-    private String lastName;
-
-    @Column(name = "Email", nullable = false)
-    private String email;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile", referencedColumnName = "id")
-    private Profile profile;
-
-    @ManyToMany
-            @JoinTable(
-                    name = "user_tasks",
-                    joinColumns = @JoinColumn(name = "user_id"),
-                    inverseJoinColumns = @JoinColumn(name = "task_id"))
-    Set<Task> tasks;
 
     public Long getId() {
         return id;
@@ -54,16 +57,16 @@ public class User {
         return firstName;
     }
 
-    public void setFirstName(String vorname) {
-        this.firstName = vorname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String nachname) {
-        this.lastName = nachname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -82,21 +85,21 @@ public class User {
         this.profile = profile;
     }
 
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
+    }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", Vorname='" + firstName + '\'' +
-                ", Nachname='" + lastName + '\'' +
-                ", Email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
-
-
 }
-
-/* This entity is used to store the user data in the database.
-* Each User has an ID, Vor and Nachname and an email adress.
-* Getter and Setter allow further usage of the data.
-* */
