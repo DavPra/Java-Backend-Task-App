@@ -37,15 +37,15 @@ public class SetUpService {
         user = this.userDAO.save(user);
 
         Task task1 = new Task();
-        task1.setTitel("Task 1");
-        task1.setBeschreibung("Beschreibung 1");
+        task1.setTitle("Task 1");
+        task1.setDescription("Beschreibung 1");
         task1.setDueDate("01.01.2020");
         task1.setDone(false);
         task1 = this.taskDAO.save(task1);
 
         Task task2 = new Task();
-        task2.setTitel("Task 2");
-        task2.setBeschreibung("Beschreibung 2");
+        task2.setTitle("Task 2");
+        task2.setDescription("Beschreibung 2");
         task2.setDueDate("02.02.2020");
         task2.setDone(false);
         task2 = this.taskDAO.save(task2);
