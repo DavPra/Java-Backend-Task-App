@@ -3,9 +3,12 @@ package at.codersbay.java.taskapp.rest.entities;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * This entity is used to store the task data in the database.
+ * Each Task has an ID, a title, a description, a due date, and a boolean to check if the task is done.
+ */
 @Entity
 @Table(name = "tasks")
-
 public class Task {
 
     @Id
@@ -13,31 +16,29 @@ public class Task {
     @Column(name = "id")
     private Long id;
 
-    public Task() {
-    }
+    @Column(name = "title", nullable = false)
+    private String title;
 
-    public Task(Long id, String titel, String beschreibung, String dueDate, boolean done) {
-        this.id = id;
-        this.titel = titel;
-        this.beschreibung = beschreibung;
-        this.dueDate = dueDate;
-        this.done = done;
-    }
+    @Column(name = "description", nullable = false)
+    private String description;
 
-    @Column(name = "Titel", nullable = false)
-    private String titel;
-
-    @Column(name = "Beschreibung", nullable = false)
-    private String beschreibung;
-
-    @Column(name = "Fälligkeitsdatum", nullable = false)
+    @Column(name = "due_date", nullable = false)
     private String dueDate;
 
-    @Column(name = "Erledigt", nullable = false)
+    @Column(name = "is_done", nullable = false)
     private boolean done;
 
     @ManyToMany(mappedBy = "tasks")
-    Set<User> users;
+    private Set<User> users;
+
+    public Task() {}
+
+    public Task(String title, String description, String dueDate, boolean done) {
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.done = done;
+    }
 
     public Long getId() {
         return id;
@@ -47,20 +48,20 @@ public class Task {
         this.id = id;
     }
 
-    public String getTitel() {
-        return titel;
+    public String getTitle() {
+        return title;
     }
 
-    public void setTitel(String titel) {
-        this.titel = titel;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getBeschreibung() {
-        return beschreibung;
+    public String getDescription() {
+        return description;
     }
 
-    public void setBeschreibung(String beschreibung) {
-        this.beschreibung = beschreibung;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDueDate() {
@@ -79,23 +80,22 @@ public class Task {
         this.done = done;
     }
 
-    public boolean getDone() {
-        return done;
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override
     public String toString() {
         return "Task{" +
                 "id=" + id +
-                ", titel='" + titel + '\'' +
-                ", beschreibung='" + beschreibung + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
                 ", dueDate='" + dueDate + '\'' +
                 ", done=" + done +
                 '}';
     }
-
 }
-
-/* This entity is used to store the task data in the database.
-* Each Task has an ID, a title, a description, a due date and a boolean to check if the task is done.
- */

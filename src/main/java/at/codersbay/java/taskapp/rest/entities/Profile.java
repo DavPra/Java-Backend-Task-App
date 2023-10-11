@@ -1,35 +1,37 @@
 package at.codersbay.java.taskapp.rest.entities;
 
-
 import javax.persistence.*;
 
+/**
+ * This entity is used to store the profile data in the database.
+ * Each Profile has an ID, a bio, and an image.
+ */
 @Entity
 @Table(name = "profiles")
-
 public class Profile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-
     private Long id;
 
-    @Column(name = "Bio", nullable = false)
+    @Column(name = "bio", nullable = false)
     private String bio;
 
-    @Column(name = "Image", nullable = false)
+    @Column(name = "image", nullable = false)
     private String image;
 
     @OneToOne(mappedBy = "profile")
     private User user;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    public Profile() {}
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getBio() {
@@ -52,12 +54,7 @@ public class Profile {
         return user;
     }
 
-
     public void setUser(User user) {
         this.user = user;
     }
 }
-
-/* This entity is used to store the profile data in the database.
-    * Each Profile has an ID, a bio and an image.
- */
