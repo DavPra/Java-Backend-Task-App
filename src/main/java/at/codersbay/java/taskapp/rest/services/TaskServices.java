@@ -2,6 +2,8 @@ package at.codersbay.java.taskapp.rest.services;
 
 import at.codersbay.java.taskapp.rest.DAO.TaskDAO;
 import at.codersbay.java.taskapp.rest.entities.Task;
+import at.codersbay.java.taskapp.rest.entities.User;
+import at.codersbay.java.taskapp.rest.DTO.*;
 import at.codersbay.java.taskapp.rest.exceptions.TaskNotFoundException;
 
 import org.springframework.stereotype.Service;
@@ -19,13 +21,14 @@ public class TaskServices {
         this.taskDAO = taskDAO;
     }
 
-    public Task createTask(Task task) {
+    public Task createTask(Task task, Set<User> users) {
         if (task == null) {
             throw new IllegalArgumentException("Task is null");
         }
         if (task.getId() != null) {
             throw new IllegalArgumentException("Task already exists");
         }
+        task.setUsers(users);
         return taskDAO.save(task);
     }
 
@@ -48,11 +51,10 @@ public class TaskServices {
         }
         Task existingTask = getTaskByTaskID(id);
 
-        existingTask.setTitel(task.getTitel());
-        existingTask.setBeschreibung(task.getBeschreibung());
+        existingTask.setTitle(task.getTitle());
+        existingTask.setDescription(task.getDescription());
         existingTask.setDueDate(task.getDueDate());
-        existingTask.setDone(task.getDone());
-
+        existingTask.setDone(task.isDone());
 
         return taskDAO.save(existingTask);
     }

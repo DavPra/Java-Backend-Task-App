@@ -3,12 +3,14 @@ package at.codersbay.java.taskapp.rest.controller;
 import at.codersbay.java.taskapp.rest.entities.*;
 import at.codersbay.java.taskapp.rest.exceptions.*;
 import at.codersbay.java.taskapp.rest.services.*;
+import at.codersbay.java.taskapp.rest.DTO.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class ApplicationController {
@@ -50,18 +52,7 @@ public class ApplicationController {
 
     @PostMapping("/users")
     User createUser(@RequestBody User user) throws UserAlreadyExistsException {
-
-        HttpStatus status = null;
-        String message = "";
-        try {
-            user = UserServices.createUser(user);
-            status = HttpStatus.OK;
-            message = "User created";
-        } catch (UserAlreadyExistsException UAEE) {
-            status = HttpStatus.CONFLICT;
-            message = UAEE.getMessage();
-        }
-        return user;
+        return UserServices.createUser(user);
     }
 
     @PutMapping("/users/{id}")
@@ -69,7 +60,7 @@ public class ApplicationController {
         return UserServices.updateUserByUserID(id, user);
     }
 
-    @DeleteMapping("/users/{id}")  //error when deleting because no profile is found i think
+    @DeleteMapping("/users/{id}")
     User deleteUser(@PathVariable Long id) throws UserNotFoundException, ProfileNotFoundException {
         ProfileServices.deleteProfileByUserID(id);
         return UserServices.deleteUser(id);
@@ -86,8 +77,25 @@ public class ApplicationController {
     }
 
     @PostMapping("/tasks")
-    Task createTask(@RequestBody Task task) throws TaskNotFoundException {
-        return TaskServices.createTask(task);
+    Task createTask(@RequestBody TaskCreationRequest taskRequest) throws TaskNotFoundException, UserNotFoundException {
+        Task task = new Task();
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setDueDate(taskRequest.getDueDate());
+        task.setDone(taskRequest.isDone());
+
+        Set<User> users = taskRequest.getUserIds().stream()
+                .map(userId -> {
+                    try {
+                        return UserServices.getUserByID(userId);
+                    } catch (UserNotFoundException e) {
+                        throw new RuntimeException("User not found for ID: " + userId);
+                    }
+                })
+                .collect(Collectors.toSet());
+
+        task.setUsers(users);
+        return TaskServices.createTask(task, users);
     }
 
     @PutMapping("/tasks/{id}")
@@ -100,7 +108,6 @@ public class ApplicationController {
         return TaskServices.deleteTaskByTaskID(id);
     }
 
-    //Profiles need to be fixed to work with the new User class
     @GetMapping("/profiles")
     List<Profile> getAllProfiles() {
         return ProfileServices.getAllProfiles();
@@ -124,10 +131,8 @@ public class ApplicationController {
 
     @DeleteMapping("/profiles/{id}")
     Profile deleteProfile(@PathVariable Long id) throws ProfileNotFoundException, UserNotFoundException {
-
         Profile profile = ProfileServices.getProfileByUserID(id);
         UserServices.deleteUser(profile.getUser().getId());
-
         return ProfileServices.deleteProfileByID(id);
     }
 
