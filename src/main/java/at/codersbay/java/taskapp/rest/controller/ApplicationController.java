@@ -24,6 +24,7 @@ public class ApplicationController {
     @Autowired
     private TaskServices TaskServices;
 
+    // Testing paths
     @GetMapping("/hi")
     String welcome() {
         return "Hello";
@@ -34,6 +35,7 @@ public class ApplicationController {
         return "it gets hang to the error. Try enjoying surfing.";
     }
 
+    // User paths
     @CrossOrigin
     @GetMapping("/users")
     List<User> getAllUsers() {
@@ -65,6 +67,8 @@ public class ApplicationController {
         ProfileServices.deleteProfileByUserID(id);
         return UserServices.deleteUser(id);
     }
+
+    // Task paths
 
     @GetMapping("/tasks")
     List<Task> getAllTasks() {
@@ -108,6 +112,7 @@ public class ApplicationController {
         return TaskServices.deleteTaskByTaskID(id);
     }
 
+    // Profile paths
     @GetMapping("/profiles")
     List<Profile> getAllProfiles() {
         return ProfileServices.getAllProfiles();
