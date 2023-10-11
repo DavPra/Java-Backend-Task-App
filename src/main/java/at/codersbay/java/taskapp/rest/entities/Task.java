@@ -79,6 +79,10 @@ public class Task {
         this.done = done;
     }
 
+    public boolean getDone() {
+        return done;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
