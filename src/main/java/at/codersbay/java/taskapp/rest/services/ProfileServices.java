@@ -1,156 +1,87 @@
 package at.codersbay.java.taskapp.rest.services;
 
-import at.codersbay.java.taskapp.rest.DAO.*;
-import at.codersbay.java.taskapp.rest.entities.*;
-import at.codersbay.java.taskapp.rest.exceptions.*;
+import at.codersbay.java.taskapp.rest.DAO.ProfileDAO;
+import at.codersbay.java.taskapp.rest.entities.Profile;
+import at.codersbay.java.taskapp.rest.exceptions.ProfileNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProfileServices {
 
-    public ProfileServices() {
-    }
+    private final ProfileDAO profileDAO;
 
     @Autowired
-    ProfileDAO profileDAO;
+    public ProfileServices(ProfileDAO profileDAO) {
+        this.profileDAO = profileDAO;
+    }
 
-    public Profile createProfile (Profile profile) throws ProfileNotFoundException {
+    public Profile createProfile(Profile profile) {
         if (profile == null) {
-            throw new ProfileNotFoundException("Profile is null");
+            throw new IllegalArgumentException("Profile is null");
         }
         if (profile.getId() != null) {
-            throw new ProfileNotFoundException("Profile already exists");
+            throw new IllegalStateException("Profile already exists");
         }
-        try {
-            profileDAO.save(profile);
-        } catch (Exception e) {
-            throw new ProfileNotFoundException("Profile could not be created");
-        }
-        return profile;
+        return profileDAO.save(profile);
     }
 
     public List<Profile> getAllProfiles() {
-
         return profileDAO.findAll();
     }
 
-    public Profile getProfileByID (Long id) throws ProfileNotFoundException {
+    public Profile getProfileByID(Long id) throws ProfileNotFoundException {
         if (id == null) {
             throw new ProfileNotFoundException("Id is null");
         }
-        Optional<Profile> profile = profileDAO.findById(id);
-        if (!profile.isPresent()) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-        return profile.get();
+        return profileDAO.findById(id).orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
     }
 
-    public Profile getProfileByUserID (Long id) throws ProfileNotFoundException {
+    public Profile getProfileByUserID(Long id) throws ProfileNotFoundException {
         if (id == null) {
             throw new ProfileNotFoundException("Id is null");
         }
-        Optional<Profile> profile = Optional.ofNullable(profileDAO.findByUserId(id));
-        if (!profile.isPresent()) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-        return profile.get();
+        return Optional.ofNullable(profileDAO.findByUserId(id))
+                .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
     }
 
-    public Profile updateProfileByProfileId (Long id, Profile profile) throws ProfileNotFoundException {
-        if (id == null) {
-            throw new ProfileNotFoundException("Id is null");
-        }
+    public Profile updateProfileByUserID(Long userId, Profile profile) throws ProfileNotFoundException {
         if (profile == null) {
-            throw new ProfileNotFoundException("Profile is null");
+            throw new IllegalArgumentException("Profile is null");
         }
-        Optional<Profile> profileOptional = profileDAO.findById(id);
-        if (!profileOptional.isPresent()) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-        profile.setId(id);
-        try {
-            profileDAO.save(profile);
-        } catch (Exception e) {
-            throw new ProfileNotFoundException("Profile could not be updated");
-        }
+        Profile existingProfile = getProfileByUserID(userId);
+
+        existingProfile.setBio(profile.getBio());
+        existingProfile.setImage(profile.getImage());
+        existingProfile.setUser(profile.getUser());
+
+        return profileDAO.save(existingProfile);
+    }
+
+    public Profile deleteProfileByID(Long id) throws ProfileNotFoundException {
+        Profile profile = getProfileByID(id);
+        profileDAO.delete(profile);
         return profile;
     }
 
-    public Profile updateProfileByUserID (Long id, Profile profile) throws ProfileNotFoundException {
-        if (id == null) {
-            throw new ProfileNotFoundException("Id is null");
-        }
-        if (profile == null) {
-            throw new ProfileNotFoundException("Profile is null");
-        }
-        Optional<Profile> profileOptional = Optional.ofNullable(profileDAO.findByUserId(id));
-        if (!profileOptional.isPresent()) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-        profile.setId(profileOptional.get().getId());
-        try {
-            profileDAO.save(profile);
-        } catch (Exception e) {
-            throw new ProfileNotFoundException("Profile could not be updated");
-        }
+    public Profile deleteProfileByUserID(Long userId) throws ProfileNotFoundException {
+        Profile profile = getProfileByUserID(userId);
+        profileDAO.delete(profile);
         return profile;
     }
 
-    public Profile deleteProfileByID (Long id) throws ProfileNotFoundException {
-        if (id == null) {
-            throw new ProfileNotFoundException("Id is null");
-        }
-        Optional<Profile> profile = profileDAO.findById(id);
-        if (!profile.isPresent()) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-        try {
-            profileDAO.delete(profile.get());
-        } catch (Exception e) {
-            throw new ProfileNotFoundException("Profile could not be deleted");
-        }
-        return profile.get();
-    }
-
-    public Profile deleteProfileByUserID (Long id) throws ProfileNotFoundException {
-        if (id == null) {
-            throw new ProfileNotFoundException("Id is null");
-        }
-        Optional<Profile> profile = Optional.ofNullable(profileDAO.findByUserId(id));
-        if (!profile.isPresent()) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-        try {
-            profileDAO.delete(profile.get());
-        } catch (Exception e) {
-            throw new ProfileNotFoundException("Profile could not be deleted");
-        }
-        return profile.get();
-    }
-
-    public Profile linkProfileIDtoUserID (Long id, Profile profile) throws ProfileNotFoundException {
-        if (id == null) {
-            throw new ProfileNotFoundException("Id is null");
-        }
+    public Profile linkProfileIDtoUserID(Long id, Profile profile) throws ProfileNotFoundException {
         if (profile == null) {
-            throw new ProfileNotFoundException("Profile is null");
+            throw new IllegalArgumentException("Profile is null");
         }
-        Optional<Profile> profileOptional = profileDAO.findById(id);
-        if (!profileOptional.isPresent()) {
-            throw new ProfileNotFoundException("Profile not found");
-        }
-        profile.setId(id);
-        try {
-            profileDAO.save(profile);
-        } catch (Exception e) {
-            throw new ProfileNotFoundException("Profile could not be updated");
-        }
-        return profile;
+        Profile existingProfile = getProfileByID(id);
+
+        existingProfile.setUser(profile.getUser());
+
+        return profileDAO.save(existingProfile);
     }
-
-
 }
