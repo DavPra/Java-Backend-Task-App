@@ -16,29 +16,21 @@ import java.util.*;
 public class TaskServices {
 
     private final TaskDAO taskDAO;
-    private final UserDAO userDAO;  // Added UserDAO as a dependency
+    private final UserDAO userDAO;
 
     @Autowired
-    public TaskServices(TaskDAO taskDAO, UserDAO userDAO) { // Modified constructor to take UserDAO
+    public TaskServices(TaskDAO taskDAO, UserDAO userDAO) {
         this.taskDAO = taskDAO;
         this.userDAO = userDAO;
     }
 
-    public Task createTask(TaskCreationRequest taskRequest) throws UserNotFoundException {
-        Task task = new Task();
-        task.setTitle(taskRequest.getTitle());
-        task.setDescription(taskRequest.getDescription());
-        task.setDueDate(taskRequest.getDueDate());
-        task.setDone(taskRequest.isDone());
-
-        Set<Long> userIds = taskRequest.getUserIds();
-        List<User> users = new ArrayList<>();
-        for (Long userId : userIds) {
-            users.add(userDAO.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found for ID: " + userId)));
+    public Task createTask(Task task) throws TaskAlreadyExistsException, UserNotFoundException {
+        if (task == null) {
+            throw new IllegalArgumentException("Task is null");
         }
-
-        task.setUsers(new HashSet<>(users));
-
+        if (task.getId() != null) {
+            throw new TaskAlreadyExistsException("Task already exists");
+        }
         return taskDAO.save(task);
     }
 

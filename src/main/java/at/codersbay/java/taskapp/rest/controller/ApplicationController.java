@@ -8,9 +8,9 @@ import at.codersbay.java.taskapp.rest.DTO.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 public class ApplicationController {
@@ -64,7 +64,6 @@ public class ApplicationController {
 
     @DeleteMapping("/users/{id}")
     User deleteUser(@PathVariable Long id) throws UserNotFoundException, ProfileNotFoundException {
-        ProfileServices.deleteProfileByUserID(id);
         return UserServices.deleteUser(id);
     }
 
@@ -81,26 +80,16 @@ public class ApplicationController {
     }
 
     @PostMapping("/tasks")
-    Task createTask(@RequestBody TaskCreationRequest taskRequest) throws TaskNotFoundException, UserNotFoundException {
-        Task task = new Task();
-        task.setTitle(taskRequest.getTitle());
-        task.setDescription(taskRequest.getDescription());
-        task.setDueDate(taskRequest.getDueDate());
-        task.setDone(taskRequest.isDone());
-
-        Set<User> users = taskRequest.getUserIds().stream()
-                .map(userId -> {
-                    try {
-                        return UserServices.getUserByID(userId);
-                    } catch (UserNotFoundException e) {
-                        throw new RuntimeException("User not found for ID: " + userId);
-                    }
-                })
-                .collect(Collectors.toSet());
-
-        task.setUsers(users);
-        return TaskServices.createTask(task, users);
+    public Task createTask(@RequestBody Task task) {
+        try {
+            return TaskServices.createTask(task);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more users not found", e);
+        } catch (TaskAlreadyExistsException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task Already exists", e);
+        }
     }
+
 
     @PutMapping("/tasks/{id}")
     Task updateTask(@PathVariable Long id, @RequestBody Task task) throws TaskNotFoundException {
@@ -123,11 +112,11 @@ public class ApplicationController {
         return ProfileServices.getProfileByUserID(id);
     }
 
-    @PostMapping("/profiles/{id}")
-    Profile createProfile(@RequestBody Profile profile) throws ProfileNotFoundException {
-        ProfileServices.createProfile(profile);
-        return ProfileServices.linkProfileIDtoUserID(profile.getUser().getId(), profile);
+    @PostMapping("/profiles/{userID}")
+    public Profile createProfile(@PathVariable Long userID, @RequestBody Profile profile) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException {
+        return ProfileServices.createAndLinkProfileToUser(userID, profile);
     }
+
 
     @PutMapping("/profiles/{id}")
     Profile updateProfile(@PathVariable Long id, @RequestBody Profile profile) throws ProfileNotFoundException {
