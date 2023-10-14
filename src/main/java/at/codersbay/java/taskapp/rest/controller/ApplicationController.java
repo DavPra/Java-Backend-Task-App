@@ -80,13 +80,15 @@ public class ApplicationController {
     }
 
     @PostMapping("/tasks")
-    public Task createTask(@RequestBody Task task) {
+    public Task createTask(@RequestBody TaskCreationDTO taskDTO) {
         try {
-            return TaskServices.createTask(task);
+            return TaskServices.createTask(taskDTO);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more users not found", e);
         } catch (TaskAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task Already exists", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating the task", e);
         }
     }
 

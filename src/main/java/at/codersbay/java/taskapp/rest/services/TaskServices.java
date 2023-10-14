@@ -9,8 +9,10 @@ import at.codersbay.java.taskapp.rest.exceptions.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskServices {
@@ -24,13 +26,32 @@ public class TaskServices {
         this.userDAO = userDAO;
     }
 
-    public Task createTask(Task task) throws TaskAlreadyExistsException, UserNotFoundException {
-        if (task == null) {
-            throw new IllegalArgumentException("Task is null");
+    @Transactional
+    public Task createTask(TaskCreationDTO taskDTO) throws TaskAlreadyExistsException, UserNotFoundException {
+        if (taskDTO == null) {
+            throw new IllegalArgumentException("Task data is null");
         }
-        if (task.getId() != null) {
-            throw new TaskAlreadyExistsException("Task already exists");
+
+        Task task = new Task();
+        task.setTitle(taskDTO.getTitle());
+        task.setDescription(taskDTO.getDescription());
+        task.setDueDate(taskDTO.getDueDate());
+        task.setDone(taskDTO.isDone());
+
+        Set<Long> userIds = taskDTO.getUserIDs();
+
+        Set<User> users = new HashSet<>(userDAO.findAllById(userIds));
+        if(users.size() != userIds.size()) {
+            throw new UserNotFoundException("One or more users not found");
         }
+
+        task.setUsers(users);
+
+        for(User user : users) {
+            user.getTasks().add(task);
+            userDAO.save(user);
+        }
+
         return taskDAO.save(task);
     }
 

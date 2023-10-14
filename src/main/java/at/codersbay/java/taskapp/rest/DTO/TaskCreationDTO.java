@@ -2,12 +2,12 @@ package at.codersbay.java.taskapp.rest.DTO;
 
 import java.util.Set;
 
-public class TaskCreationRequest {
+public class TaskCreationDTO {
     private String title;
     private String description;
     private String dueDate;
     private boolean done;
-    private Set<Long> userIds;
+    private Set<Long> userIDs;
 
     public String getTitle() {
         return title;
@@ -41,11 +41,11 @@ public class TaskCreationRequest {
         this.done = done;
     }
 
-    public Set<Long> getUserIds() {
-        return userIds;
+    public Set<Long> getUserIDs() {
+        return userIDs;
     }
 
-    public void setUserIds(Set<Long> userIds) {
-        this.userIds = userIds;
+    public void setUserIDs(Set<Long> userIDs) {
+        this.userIDs = userIDs;
     }
 }

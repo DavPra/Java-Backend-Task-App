@@ -30,7 +30,7 @@ public class User {
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private Profile profile;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_tasks",
             joinColumns = @JoinColumn(name = "user_id"),
