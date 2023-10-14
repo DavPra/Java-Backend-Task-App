@@ -33,11 +33,12 @@ public class Task {
 
     public Task() {}
 
-    public Task(String title, String description, String dueDate, boolean done) {
+    public Task(String title, String description, String dueDate, boolean done, Set<User> users) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.done = done;
+        this.users = users;
     }
 
     public Long getId() {

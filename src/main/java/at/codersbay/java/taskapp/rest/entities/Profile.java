@@ -1,5 +1,7 @@
 package at.codersbay.java.taskapp.rest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -21,10 +23,9 @@ public class Profile {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @OneToOne(mappedBy = "profile")
+    @JsonIgnore
+    @OneToOne(mappedBy = "profile", cascade = CascadeType.REMOVE)
     private User user;
-
-    public Profile() {}
 
     public Long getId() {
         return id;
