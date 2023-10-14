@@ -28,7 +28,7 @@ public class Task {
     @Column(name = "is_done", nullable = false)
     private boolean done;
 
-    @ManyToMany(mappedBy = "tasks")
+    @ManyToMany(mappedBy = "tasks", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
     private Set<User> users;
 
     public Task() {}
