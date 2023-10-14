@@ -1,10 +1,11 @@
 package at.codersbay.java.taskapp.rest.services;
 
 import at.codersbay.java.taskapp.rest.DAO.TaskDAO;
+import at.codersbay.java.taskapp.rest.DAO.UserDAO;
 import at.codersbay.java.taskapp.rest.entities.Task;
 import at.codersbay.java.taskapp.rest.entities.User;
 import at.codersbay.java.taskapp.rest.DTO.*;
-import at.codersbay.java.taskapp.rest.exceptions.TaskNotFoundException;
+import at.codersbay.java.taskapp.rest.exceptions.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,20 +16,29 @@ import java.util.*;
 public class TaskServices {
 
     private final TaskDAO taskDAO;
+    private final UserDAO userDAO;  // Added UserDAO as a dependency
 
     @Autowired
-    public TaskServices(TaskDAO taskDAO) {
+    public TaskServices(TaskDAO taskDAO, UserDAO userDAO) { // Modified constructor to take UserDAO
         this.taskDAO = taskDAO;
+        this.userDAO = userDAO;
     }
 
-    public Task createTask(Task task, Set<User> users) {
-        if (task == null) {
-            throw new IllegalArgumentException("Task is null");
+    public Task createTask(TaskCreationRequest taskRequest) throws UserNotFoundException {
+        Task task = new Task();
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setDueDate(taskRequest.getDueDate());
+        task.setDone(taskRequest.isDone());
+
+        Set<Long> userIds = taskRequest.getUserIds();
+        List<User> users = new ArrayList<>();
+        for (Long userId : userIds) {
+            users.add(userDAO.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found for ID: " + userId)));
         }
-        if (task.getId() != null) {
-            throw new IllegalArgumentException("Task already exists");
-        }
-        task.setUsers(users);
+
+        task.setUsers(new HashSet<>(users));
+
         return taskDAO.save(task);
     }
 

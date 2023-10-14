@@ -1,11 +1,13 @@
 package at.codersbay.java.taskapp.rest.services;
 
 import at.codersbay.java.taskapp.rest.DAO.ProfileDAO;
+import at.codersbay.java.taskapp.rest.DAO.UserDAO;
 import at.codersbay.java.taskapp.rest.entities.Profile;
-import at.codersbay.java.taskapp.rest.exceptions.ProfileNotFoundException;
+import at.codersbay.java.taskapp.rest.entities.User;
+import at.codersbay.java.taskapp.rest.exceptions.*;
 
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,17 +18,27 @@ public class ProfileServices {
     private final ProfileDAO profileDAO;
 
     @Autowired
+    private UserDAO userDAO;
+
+    @Autowired
     public ProfileServices(ProfileDAO profileDAO) {
         this.profileDAO = profileDAO;
     }
 
-    public Profile createProfile(Profile profile) {
+    public Profile createAndLinkProfileToUser(Long userId, Profile profile) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException {
         if (profile == null) {
-            throw new IllegalArgumentException("Profile is null");
+            throw new PrimaryIdNullOrEmptyException("Profile is null");
         }
+
         if (profile.getId() != null) {
-            throw new IllegalStateException("Profile already exists");
+            throw new ProfileAlreadyExistsException("Profile already exists");
         }
+
+        User user = userDAO.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found for ID: " + userId));
+
+        profile.setUser(user);
+        user.setProfile(profile);
+        userDAO.save(user);
         return profileDAO.save(profile);
     }
 
@@ -74,12 +86,11 @@ public class ProfileServices {
         return profile;
     }
 
-    public Profile linkProfileIDtoUserID(Long id, Profile profile) throws ProfileNotFoundException {
+    public Profile linkUserToProfile(Long id, Profile profile) throws ProfileNotFoundException {
         if (profile == null) {
             throw new IllegalArgumentException("Profile is null");
         }
         Profile existingProfile = getProfileByID(id);
-
         existingProfile.setUser(profile.getUser());
 
         return profileDAO.save(existingProfile);
