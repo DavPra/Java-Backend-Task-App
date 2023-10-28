@@ -75,7 +75,7 @@ public class TaskServices {
 
         task.setUsers(users);
 
-        task = taskDAO.save(task);  // Save the new task to the database
+        task = taskDAO.save(task);
 
         for (User user : users) {
             user.getTasks().add(task);
@@ -110,6 +110,7 @@ public class TaskServices {
 
         Task existingTask = taskDAO.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
 
+        existingTask.setId(taskDAO.findById(id).get().getId());
         existingTask.setTitle(taskUpdates.getTitle());
         existingTask.setDescription(taskUpdates.getDescription());
         existingTask.setDueDate(taskUpdates.getDueDate());

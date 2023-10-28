@@ -97,7 +97,7 @@ public class ApplicationController {
     TaskWithUserIdsDTO updateTask(@PathVariable Long id, @RequestBody TaskWithUserIdsDTO taskDto) throws TaskNotFoundException {
         Task task = TaskServices.convertDtoToTask(taskDto);
         Task updatedTask = TaskServices.updateTaskByTaskID(id, task);
-        return TaskServices.convertToDTO(updatedTask);  // Assuming you have this method from previous discussions
+        return TaskServices.convertToDTO(updatedTask);
     }
 
 
