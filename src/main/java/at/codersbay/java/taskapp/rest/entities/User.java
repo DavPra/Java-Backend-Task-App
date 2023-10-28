@@ -32,8 +32,8 @@ public class User {
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private Profile profile;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JsonManagedReference
+    @ManyToMany(fetch = FetchType.LAZY)
+    //@JsonManagedReference
     @JoinTable(
             name = "user_tasks",
             joinColumns = @JoinColumn(name = "user_id"),

@@ -100,7 +100,7 @@ public class ApplicationController {
 
     @DeleteMapping("/tasks/{id}")
     Task deleteTask(@PathVariable Long id) throws TaskNotFoundException {
-        return TaskServices.deleteTaskByTaskID(id);
+        return TaskServices.deleteTaskByID(id);
     }
 
     // Profile paths

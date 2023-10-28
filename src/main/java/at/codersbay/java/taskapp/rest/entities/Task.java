@@ -30,8 +30,9 @@ public class Task {
     @Column(name = "is_done", nullable = false)
     private boolean done;
 
-    @ManyToMany(mappedBy = "tasks", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "tasks", fetch = FetchType.LAZY)
     @JsonBackReference
+    @Column(name = "users")
     private Set<User> users;
 
     public Task() {}
@@ -100,6 +101,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", dueDate='" + dueDate + '\'' +
                 ", done=" + done +
+                ", users=" + users +
                 '}';
     }
 }

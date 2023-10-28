@@ -39,6 +39,8 @@ public class TaskServices {
         task.setDueDate(taskDTO.getDueDate());
         task.setDone(taskDTO.isDone());
 
+        task = taskDAO.save(task);
+
         Set<Long> userIds = taskDTO.getUserIDs();
 
         Set<User> users = new HashSet<>(userDAO.findAllById(userIds));
@@ -46,14 +48,15 @@ public class TaskServices {
             throw new UserNotFoundException("One or more users not found");
         }
 
-        task.setUsers(users);
+        //task.setUsers(users);
 
         for(User user : users) {
             user.getTasks().add(task);
             userDAO.save(user);
         }
         System.out.println("Ending createTask method");
-        return taskDAO.save(task);
+        //return taskDAO.save(task);
+        return task;
 
     }
 
@@ -64,11 +67,17 @@ public class TaskServices {
         return taskDAO.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
     }
 
-    public Task deleteTaskByTaskID(Long id) throws TaskNotFoundException {
-        Task task = getTaskByTaskID(id);
+    public Task deleteTaskByID(Long taskId) throws TaskNotFoundException {
+        Task task = taskDAO.findById(taskId).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        for (User user : task.getUsers()) {
+            user.getTasks().remove(task);
+            userDAO.save(user); // Save the user to update the database
+        }
+        task.setUsers(null); // Remove all associations from the task side
         taskDAO.delete(task);
         return task;
     }
+
 
     public Task updateTaskByTaskID(Long id, Task task) throws TaskNotFoundException {
         if (task == null) {

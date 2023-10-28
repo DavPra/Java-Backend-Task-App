@@ -1,11 +1,14 @@
 package at.codersbay.java.taskapp.rest.services;
 
+import at.codersbay.java.taskapp.rest.DAO.TaskDAO;
 import at.codersbay.java.taskapp.rest.DAO.UserDAO;
+import at.codersbay.java.taskapp.rest.entities.Task;
 import at.codersbay.java.taskapp.rest.entities.User;
-import at.codersbay.java.taskapp.rest.exceptions.UserAlreadyExistsException;
-import at.codersbay.java.taskapp.rest.exceptions.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import at.codersbay.java.taskapp.rest.exceptions.*;
+
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +17,15 @@ import java.util.Optional;
 public class UserServices {
 
     private final UserDAO userDAO;
+    private final TaskDAO taskDAO;
 
     @Autowired
-    public UserServices(UserDAO userDAO) {
+    public UserServices(UserDAO userDAO, TaskDAO taskDAO) {
         this.userDAO = userDAO;
+        this.taskDAO = taskDAO;
     }
 
-    public User createUser(User user) throws UserAlreadyExistsException {
+    public User createUser(@RequestBody User user) throws UserAlreadyExistsException {
         if (user == null) {
             throw new IllegalArgumentException("User is null");
         }
@@ -49,15 +54,18 @@ public class UserServices {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-    public User deleteUser(Long id) throws UserNotFoundException {
-        User user = getUserByID(id);
-        try {
-            userDAO.delete(user);
-        } catch (Exception e) {
-            throw new UserNotFoundException("User could not be deleted");
+    public User deleteUser(Long userId) throws UserNotFoundException {
+        User user = userDAO.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        for (Task task : user.getTasks()) {
+            task.getUsers().remove(user);
+            taskDAO.save(task); // Update the task
         }
+        user.setTasks(null); // Remove all associations from the user side
+        userDAO.delete(user);
+
         return user;
     }
+
 
     public User updateUserByUserID(Long id, User user) throws UserNotFoundException {
         if (user == null) {
