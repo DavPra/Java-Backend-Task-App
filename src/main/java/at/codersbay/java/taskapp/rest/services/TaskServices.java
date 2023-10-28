@@ -26,9 +26,36 @@ public class TaskServices {
         this.userDAO = userDAO;
     }
 
+    public TaskWithUserIdsDTO convertToDTO(Task task) {
+        TaskWithUserIdsDTO dto = new TaskWithUserIdsDTO();
+        dto.setId(task.getId());
+        dto.setTitle(task.getTitle());
+        dto.setDescription(task.getDescription());
+        dto.setDueDate(task.getDueDate());
+        dto.setDone(task.isDone());
+        dto.setUserIds(task.getUsers().stream().map(User::getId).collect(Collectors.toSet()));
+        return dto;
+    }
+
+    public Task convertDtoToTask(TaskWithUserIdsDTO taskDto) {
+        Task task = new Task();
+        task.setId(taskDto.getId());
+        task.setTitle(taskDto.getTitle());
+        task.setDescription(taskDto.getDescription());
+        task.setDueDate(taskDto.getDueDate());
+        task.setDone(taskDto.isDone());
+
+
+        Set<User> users = new HashSet<>(userDAO.findAllById(taskDto.getUserIds()));
+        task.setUsers(users);
+
+        return task;
+    }
+
+
     @Transactional
-    public Task createTask(TaskCreationDTO taskDTO) throws TaskAlreadyExistsException, UserNotFoundException {
-        System.out.println("Starting createTask method");
+    public TaskWithUserIdsDTO createTask(TaskCreationDTO taskDTO) throws TaskAlreadyExistsException, UserNotFoundException {
+        // Validate the input
         if (taskDTO == null) {
             throw new IllegalArgumentException("Task data is null");
         }
@@ -39,8 +66,6 @@ public class TaskServices {
         task.setDueDate(taskDTO.getDueDate());
         task.setDone(taskDTO.isDone());
 
-        task = taskDAO.save(task);
-
         Set<Long> userIds = taskDTO.getUserIDs();
 
         Set<User> users = new HashSet<>(userDAO.findAllById(userIds));
@@ -48,52 +73,53 @@ public class TaskServices {
             throw new UserNotFoundException("One or more users not found");
         }
 
-        //task.setUsers(users);
+        task.setUsers(users);
 
-        for(User user : users) {
+        task = taskDAO.save(task);  // Save the new task to the database
+
+        for (User user : users) {
             user.getTasks().add(task);
             userDAO.save(user);
         }
-        System.out.println("Ending createTask method");
-        //return taskDAO.save(task);
-        return task;
 
+        return convertToDTO(task);
     }
 
-    public Task getTaskByTaskID(Long id) throws TaskNotFoundException {
-        if (id == null) {
-            throw new TaskNotFoundException("Id is null");
-        }
-        return taskDAO.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+
+    public TaskWithUserIdsDTO getTaskByTaskID(Long id) throws TaskNotFoundException {
+        Task task = taskDAO.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        return convertToDTO(task);
     }
 
     public Task deleteTaskByID(Long taskId) throws TaskNotFoundException {
         Task task = taskDAO.findById(taskId).orElseThrow(() -> new TaskNotFoundException("Task not found"));
         for (User user : task.getUsers()) {
             user.getTasks().remove(task);
-            userDAO.save(user); // Save the user to update the database
+            userDAO.save(user);
         }
-        task.setUsers(null); // Remove all associations from the task side
+        task.setUsers(null);
         taskDAO.delete(task);
         return task;
     }
 
-
-    public Task updateTaskByTaskID(Long id, Task task) throws TaskNotFoundException {
-        if (task == null) {
+    @Transactional
+    public Task updateTaskByTaskID(Long id, Task taskUpdates) throws TaskNotFoundException {
+        if (taskUpdates == null) {
             throw new IllegalArgumentException("Task is null");
         }
-        Task existingTask = getTaskByTaskID(id);
 
-        existingTask.setTitle(task.getTitle());
-        existingTask.setDescription(task.getDescription());
-        existingTask.setDueDate(task.getDueDate());
-        existingTask.setDone(task.isDone());
+        Task existingTask = taskDAO.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+
+        existingTask.setTitle(taskUpdates.getTitle());
+        existingTask.setDescription(taskUpdates.getDescription());
+        existingTask.setDueDate(taskUpdates.getDueDate());
+        existingTask.setDone(taskUpdates.isDone());
 
         return taskDAO.save(existingTask);
     }
 
-    public List<Task> getAllTasks() {
-        return taskDAO.findAll();
+    public List<TaskWithUserIdsDTO> getAllTasks() {
+        List<Task> tasks = taskDAO.findAll();
+        return tasks.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 }

@@ -1,6 +1,8 @@
 package at.codersbay.java.taskapp.rest.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -11,6 +13,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "tasks")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Task {
 
     @Id
@@ -31,8 +34,8 @@ public class Task {
     private boolean done;
 
     @ManyToMany(mappedBy = "tasks", fetch = FetchType.LAZY)
-    @JsonBackReference
-    @Column(name = "users")
+
+    @Column(name = "userIDs")
     private Set<User> users;
 
     public Task() {}
@@ -101,7 +104,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", dueDate='" + dueDate + '\'' +
                 ", done=" + done +
-                ", users=" + users +
+                ", userIDs=" + users +
                 '}';
     }
 }

@@ -1,6 +1,8 @@
 package at.codersbay.java.taskapp.rest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -12,6 +14,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "users")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 
     @Id
@@ -25,7 +28,7 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique=true)
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -33,7 +36,6 @@ public class User {
     private Profile profile;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    //@JsonManagedReference
     @JoinTable(
             name = "user_tasks",
             joinColumns = @JoinColumn(name = "user_id"),

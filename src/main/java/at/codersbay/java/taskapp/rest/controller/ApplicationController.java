@@ -69,18 +69,19 @@ public class ApplicationController {
 
     // Task paths
 
+
     @GetMapping("/tasks")
-    List<Task> getAllTasks() {
+    List<TaskWithUserIdsDTO> getAllTasks() {
         return TaskServices.getAllTasks();
     }
 
     @GetMapping("/tasks/{id}")
-    Task getTask(@PathVariable Long id) throws TaskNotFoundException {
+    TaskWithUserIdsDTO getTask(@PathVariable Long id) throws TaskNotFoundException {
         return TaskServices.getTaskByTaskID(id);
     }
 
     @PostMapping("/tasks")
-    public Task createTask(@RequestBody TaskCreationDTO taskDTO) {
+    public TaskWithUserIdsDTO createTask(@RequestBody TaskCreationDTO taskDTO) {
         try {
             return TaskServices.createTask(taskDTO);
         } catch (UserNotFoundException e) {
@@ -92,11 +93,13 @@ public class ApplicationController {
         }
     }
 
-
     @PutMapping("/tasks/{id}")
-    Task updateTask(@PathVariable Long id, @RequestBody Task task) throws TaskNotFoundException {
-        return TaskServices.updateTaskByTaskID(id, task);
+    TaskWithUserIdsDTO updateTask(@PathVariable Long id, @RequestBody TaskWithUserIdsDTO taskDto) throws TaskNotFoundException {
+        Task task = TaskServices.convertDtoToTask(taskDto);
+        Task updatedTask = TaskServices.updateTaskByTaskID(id, task);
+        return TaskServices.convertToDTO(updatedTask);  // Assuming you have this method from previous discussions
     }
+
 
     @DeleteMapping("/tasks/{id}")
     Task deleteTask(@PathVariable Long id) throws TaskNotFoundException {
