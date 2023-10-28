@@ -28,6 +28,7 @@ public class TaskServices {
 
     @Transactional
     public Task createTask(TaskCreationDTO taskDTO) throws TaskAlreadyExistsException, UserNotFoundException {
+        System.out.println("Starting createTask method");
         if (taskDTO == null) {
             throw new IllegalArgumentException("Task data is null");
         }
@@ -51,8 +52,9 @@ public class TaskServices {
             user.getTasks().add(task);
             userDAO.save(user);
         }
-
+        System.out.println("Ending createTask method");
         return taskDAO.save(task);
+
     }
 
     public Task getTaskByTaskID(Long id) throws TaskNotFoundException {

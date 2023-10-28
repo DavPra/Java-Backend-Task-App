@@ -1,5 +1,7 @@
 package at.codersbay.java.taskapp.rest.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -30,7 +32,8 @@ public class User {
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private Profile profile;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
     @JoinTable(
             name = "user_tasks",
             joinColumns = @JoinColumn(name = "user_id"),

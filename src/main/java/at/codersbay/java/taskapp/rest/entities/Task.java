@@ -1,5 +1,7 @@
 package at.codersbay.java.taskapp.rest.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -28,7 +30,8 @@ public class Task {
     @Column(name = "is_done", nullable = false)
     private boolean done;
 
-    @ManyToMany(mappedBy = "tasks", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
+    @ManyToMany(mappedBy = "tasks", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference
     private Set<User> users;
 
     public Task() {}
