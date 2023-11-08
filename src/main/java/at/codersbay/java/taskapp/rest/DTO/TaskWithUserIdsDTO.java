@@ -2,6 +2,8 @@ package at.codersbay.java.taskapp.rest.DTO;
 
 import java.util.Set;
 
+
+// Data Transfer Object that helps to link Tasks and Users
 public class TaskWithUserIdsDTO {
     private Long id;
     private String title;

@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+//Services to handle the profiles of Users.
+
 @Service
 public class ProfileServices {
 

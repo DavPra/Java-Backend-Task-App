@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Optional;
 
+//Services to handle the users.
+
 @Service
 public class UserServices {
 

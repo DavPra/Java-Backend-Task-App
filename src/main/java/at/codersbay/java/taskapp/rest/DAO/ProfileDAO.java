@@ -11,3 +11,5 @@ public interface ProfileDAO extends JpaRepository<Profile, Long>{
     @Query("SELECT p FROM Profile p WHERE p.id = :id")
     Profile findByUserId(Long id);
 }
+
+//interface for the profile repository

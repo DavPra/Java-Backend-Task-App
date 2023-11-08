@@ -22,7 +22,7 @@ import java.util.*;
 @RestController
 public class ApplicationController {
 
-    public static String uploadDirectory = System.getProperty("user.dir")+"/uploads";
+    //public static String uploadDirectory = System.getProperty("user.dir")+"/uploads";
 
     @Autowired
     private UserServices UserServices;
@@ -46,32 +46,32 @@ public class ApplicationController {
 
     // User paths
     @CrossOrigin
-    @GetMapping("/users")
+    @GetMapping("/users")  //returns all users in the database
     List<User> getAllUsers() {
         return UserServices.getAllUsers();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/{id}") //returns a user by its id
     User getUser(@PathVariable Long id) throws UserNotFoundException {
         return UserServices.getUserByID(id);
     }
 
-    @GetMapping("/users/byEmail/{email}")
+    @GetMapping("/users/byEmail/{email}") //returns a user by its email
     User getUserByEmail(@PathVariable String email) throws UserNotFoundException {
         return UserServices.getUserByEmail(email);
     }
 
-    @PostMapping("/users")
+    @PostMapping("/users") //creates a new user in the database
     User createUser(@RequestBody User user) throws UserAlreadyExistsException {
         return UserServices.createUser(user);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/users/{id}") //updates a user by its id
     User updateUser(@PathVariable Long id, @RequestBody User user) throws UserNotFoundException {
         return UserServices.updateUserByUserID(id, user);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/users/{id}") //deletes a user by its id
     User deleteUser(@PathVariable Long id) throws UserNotFoundException, ProfileNotFoundException {
         return UserServices.deleteUser(id);
     }
@@ -79,17 +79,17 @@ public class ApplicationController {
     // Task paths
 
 
-    @GetMapping("/tasks")
+    @GetMapping("/tasks") //returns all tasks in the database
     List<TaskWithUserIdsDTO> getAllTasks() {
         return TaskServices.getAllTasks();
     }
 
-    @GetMapping("/tasks/{id}")
+    @GetMapping("/tasks/{id}")  //returns a task by its id
     TaskWithUserIdsDTO getTask(@PathVariable Long id) throws TaskNotFoundException {
         return TaskServices.getTaskByTaskID(id);
     }
 
-    @PostMapping("/tasks")
+    @PostMapping("/tasks") //creates a new task in the database
     public TaskWithUserIdsDTO createTask(@RequestBody TaskCreationDTO taskDTO) {
         try {
             return TaskServices.createTask(taskDTO);
@@ -102,7 +102,7 @@ public class ApplicationController {
         }
     }
 
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/tasks/{id}") //updates a task by its id
     TaskWithUserIdsDTO updateTask(@PathVariable Long id, @RequestBody TaskWithUserIdsDTO taskDto) throws TaskNotFoundException {
         Task task = TaskServices.convertDtoToTask(taskDto);
         Task updatedTask = TaskServices.updateTaskByTaskID(id, task);
@@ -110,23 +110,23 @@ public class ApplicationController {
     }
 
 
-    @DeleteMapping("/tasks/{id}")
+    @DeleteMapping("/tasks/{id}") //deletes a task by its id
     Task deleteTask(@PathVariable Long id) throws TaskNotFoundException {
         return TaskServices.deleteTaskByID(id);
     }
 
     // Profile paths
-    @GetMapping("/profiles")
+    @GetMapping("/profiles")   //returns all profiles in the database
     List<Profile> getAllProfiles() {
         return ProfileServices.getAllProfiles();
     }
 
-    @GetMapping("/profiles/{id}")
+    @GetMapping("/profiles/{id}") //returns a profile by its id
     Profile getProfile(@PathVariable Long id) throws ProfileNotFoundException {
         return ProfileServices.getProfileByUserID(id);
     }
 
-    @PostMapping("/profiles/{userID}")
+    @PostMapping("/profiles/{userID}") //creates a new profile in the database
     public Profile createProfile(@PathVariable Long userID, @RequestBody Profile profile) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException, IOException {
         return ProfileServices.createAndLinkProfileToUser(userID, profile);
     }
@@ -145,12 +145,12 @@ public class ApplicationController {
      */
 
 
-    @PutMapping("/profiles/{id}")
+    @PutMapping("/profiles/{id}") //updates a profile by its id
     Profile updateProfile(@PathVariable Long id, @RequestBody Profile profile) throws ProfileNotFoundException {
         return ProfileServices.updateProfileByUserID(id, profile);
     }
 
-    @DeleteMapping("/profiles/{id}")
+    @DeleteMapping("/profiles/{id}") //deletes a profile by its id
     Profile deleteProfile(@PathVariable Long id) throws ProfileNotFoundException, UserNotFoundException {
         Profile profile = ProfileServices.getProfileByUserID(id);
         UserServices.deleteUser(profile.getUser().getId());

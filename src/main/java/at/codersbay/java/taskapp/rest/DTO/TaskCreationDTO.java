@@ -2,6 +2,8 @@ package at.codersbay.java.taskapp.rest.DTO;
 
 import java.util.Set;
 
+
+// Data Transfer Object that is used to create a new task
 public class TaskCreationDTO {
     private String title;
     private String description;
