@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-//Sets up some data for testing purposes
+/**Sets up some data for testing purposes
+ * This class is used to set up some data for testing purposes.
+ */
 @Service
 public class SetUpService {
 

@@ -13,8 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-//Services to handle the tasks of Users.
+/**
+* Services to handle the tasks of Users.
+ */
 
 @Service
 public class TaskServices {
@@ -28,6 +29,11 @@ public class TaskServices {
         this.userDAO = userDAO;
     }
 
+    /**
+     * Converts a Task object to a TaskWithUserIdsDTO object.
+     * @param task Task object
+     * @return TaskWithUserIdsDTO
+     */
     public TaskWithUserIdsDTO convertToDTO(Task task) {
         TaskWithUserIdsDTO dto = new TaskWithUserIdsDTO();
         dto.setId(task.getId());
@@ -54,7 +60,13 @@ public class TaskServices {
         return task;
     }
 
-
+    /**
+     * Creates a new task and links it to the users with the given userIDs.
+     * @param taskDTO
+     * @return TaskWithUserIdsDTO object of the created task with the userIDs of the linked users as a Set.
+     * @throws TaskAlreadyExistsException
+     * @throws UserNotFoundException
+     */
     @Transactional
     public TaskWithUserIdsDTO createTask(TaskCreationDTO taskDTO) throws TaskAlreadyExistsException, UserNotFoundException {
         // Validate the input
@@ -87,12 +99,23 @@ public class TaskServices {
         return convertToDTO(task);
     }
 
-
+    /**
+     * Returns a TaskWithUserIdsDTO object of the task with the given id.
+     * @param id The id of the task.
+     * @return All Tasks with the given id as a TaskWithUserIdsDTO object.
+     * @throws TaskNotFoundException
+     */
     public TaskWithUserIdsDTO getTaskByTaskID(Long id) throws TaskNotFoundException {
         Task task = taskDAO.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
         return convertToDTO(task);
     }
 
+    /**
+     * Deletes a Task with the given id.
+     * @param taskId The id of the task.
+     * @return All Tasks with the given id as a TaskWithUserIdsDTO object.
+     * @throws TaskNotFoundException
+     */
     public Task deleteTaskByID(Long taskId) throws TaskNotFoundException {
         Task task = taskDAO.findById(taskId).orElseThrow(() -> new TaskNotFoundException("Task not found"));
         for (User user : task.getUsers()) {
@@ -104,6 +127,13 @@ public class TaskServices {
         return task;
     }
 
+    /**
+     * Updates a Task with the given id.
+     * @param id The id of the task.
+     * @param taskUpdates The updated task.
+     * @return The updated task.
+     * @throws TaskNotFoundException
+     */
     @Transactional
     public Task updateTaskByTaskID(Long id, Task taskUpdates) throws TaskNotFoundException {
         if (taskUpdates == null) {
@@ -121,6 +151,10 @@ public class TaskServices {
         return taskDAO.save(existingTask);
     }
 
+    /**
+     * Returns all tasks as a List of TaskWithUserIdsDTO objects.
+     * @return All tasks as a List of TaskWithUserIdsDTO objects.
+     */
     public List<TaskWithUserIdsDTO> getAllTasks() {
         List<Task> tasks = taskDAO.findAll();
         return tasks.stream().map(this::convertToDTO).collect(Collectors.toList());
