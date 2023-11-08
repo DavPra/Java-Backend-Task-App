@@ -5,11 +5,14 @@ import at.codersbay.java.taskapp.rest.exceptions.*;
 import at.codersbay.java.taskapp.rest.services.*;
 import at.codersbay.java.taskapp.rest.DTO.*;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -118,8 +121,8 @@ public class ApplicationController {
     }
 
     @PostMapping("/profiles/{userID}")
-    public Profile createProfile(@PathVariable Long userID, @RequestBody Profile profile) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException {
-        return ProfileServices.createAndLinkProfileToUser(userID, profile);
+    public Profile createProfile(@PathVariable Long userID, @RequestBody Profile profile,File image) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException, IOException {
+        return ProfileServices.createAndLinkProfileToUser(userID, profile, image);
     }
 
 
