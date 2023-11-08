@@ -28,7 +28,7 @@ public class ProfileServices {
         this.profileDAO = profileDAO;
     }
 
-    public Profile createAndLinkProfileToUser(Long userId, Profile profile, File image) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException, IOException {
+    public Profile createAndLinkProfileToUser(Long userId, Profile profile) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException, IOException {
         if (profile == null) {
             throw new PrimaryIdNullOrEmptyException("Profile is null");
         }
@@ -37,13 +37,9 @@ public class ProfileServices {
             throw new ProfileAlreadyExistsException("Profile already exists");
         }
 
-        byte [] imageContent = FileUtils.readFileToByteArray(image);
-        String encodedImage = java.util.Base64.getEncoder().encodeToString(imageContent);
-
         User user = userDAO.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found for ID: " + userId));
 
         profile.setUser(user);
-        profile.setImage(encodedImage);
         user.setProfile(profile);
         userDAO.save(user);
         return profileDAO.save(profile);

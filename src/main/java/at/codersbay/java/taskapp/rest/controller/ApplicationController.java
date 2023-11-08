@@ -9,14 +9,20 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
 public class ApplicationController {
+
+    public static String uploadDirectory = System.getProperty("user.dir")+"/uploads";
 
     @Autowired
     private UserServices UserServices;
@@ -121,9 +127,22 @@ public class ApplicationController {
     }
 
     @PostMapping("/profiles/{userID}")
-    public Profile createProfile(@PathVariable Long userID, @RequestBody Profile profile,File image) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException, IOException {
-        return ProfileServices.createAndLinkProfileToUser(userID, profile, image);
+    public Profile createProfile(@PathVariable Long userID, @RequestBody Profile profile) throws PrimaryIdNullOrEmptyException, ProfileNotFoundException, UserNotFoundException, ProfileAlreadyExistsException, IOException {
+        return ProfileServices.createAndLinkProfileToUser(userID, profile);
     }
+
+    /* @PostMapping("/profiles/{id}/image")
+    public Profile uploadImage@PathVariable Long id, @RequestParam("image") MultipartFile image) throws ProfileNotFoundException, IOException {
+       StringBuilder fileName = new StringBuilder();
+        Path fileNameAndPath = Paths.get(uploadDirectory, image.getOriginalFilename());
+        fileName.append(image.getOriginalFilename());
+        Files.write(fileNameAndPath, image.getBytes());
+        Profile profile = ProfileServices.getProfileByUserID(id);
+        profile.setImage(fileName.toString());
+        return ProfileServices.updateProfileByUserID(id, profile);
+    }
+
+     */
 
 
     @PutMapping("/profiles/{id}")
